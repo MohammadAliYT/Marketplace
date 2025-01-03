@@ -47,6 +47,16 @@ exports.up = async function (knex) {
       table.timestamps(true, true);
     });
   }
+
+  const profileTableExist = await knex.schema.hasTable("profile");
+  if (!profileTableExist) {
+    await knex.schema.createTable("profile", function (table) {
+      table.increments("id");
+      table.string("profile_name").notNullable().unique();
+      table.string("description");
+      table.timestamps(true, true);
+    });
+  }
 };
 
 /**
@@ -54,8 +64,5 @@ exports.up = async function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  return knex.schema
-    .dropTable("users")
-    .dropTable("roles")
-    .dropTable("products");
+  //leave the down function empty. This tells Knex that no action is needed to revert the migration.
 };
