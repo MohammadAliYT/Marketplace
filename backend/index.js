@@ -1,15 +1,24 @@
-const express = require("express");
-const router = require("./routes");
-const cors = require("cors");
-const app = express();
+const app = require("./app");
 
-const port = 3000;
+const server = app.listen(process.env.PORT, () => {
+  console.log("CORS enabled");
+  console.log(`listening on port http://localhost:${process.env.PORT}`);
+});
 
-//Middleware
-app.use(express.json());
-app.use(cors);
-app.use(router);
+//Uncaught Exception Handler
+process.on("uncaughtException", (err) => {
+  console.log(`Error: ${err.message}`);
+  console.log("Shutting down the server due to unhandled promise resejction");
+  server.close(() => {
+    process.exit(1);
+  });
+});
 
-app.listen(port, () => {
-  console.log(`Server is now listening at port ${port}`);
+//Unhandled Promise Rejection
+process.on("unhandledRejection", (err) => {
+  console.log(`Error: ${err.message}`);
+  console.log("Shutting down the server due to unhandled promise resejction");
+  server.close(() => {
+    process.exit(1);
+  });
 });
